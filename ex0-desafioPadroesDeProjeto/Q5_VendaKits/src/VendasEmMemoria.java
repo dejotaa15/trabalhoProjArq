@@ -3,16 +3,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class VendasEmMemoria implements VendasFachada{
-	private List<Produto> produtos;
-	
-	public VendasEmMemoria() {
-		produtos = new ArrayList<>();
-		produtos.add(new Produto(1, "Caneta", 1.55));
-		produtos.add(new Produto(2, "Borracha", 1.15));
-		produtos.add(new Produto(3, "Caderno", 32.99));
+/**
+ * Implementacao em memoria da fachada de vendas.
+ *
+ * O catalogo de produtos e recebido por injecao de dependencia pelo
+ * construtor. A classe deixa de ser responsavel por criar os produtos e passa
+ * a apenas orquestrar a venda, o que a desacopla dos tipos concretos da
+ * hierarquia (ProdutoIndividual e KitProduto) e permite configurar catalogos
+ * diferentes sem alterar esta classe.
+ */
+public class VendasEmMemoria implements VendasFachada {
+	private final List<Produto> produtos;
+
+	public VendasEmMemoria(List<Produto> produtos) {
+		this.produtos = new ArrayList<>(produtos);
 	}
-	
+
 	@Override
 	public Venda iniciarVenda() {
 		return new Venda(LocalDateTime.now());
@@ -20,7 +26,11 @@ public class VendasEmMemoria implements VendasFachada{
 
 	@Override
 	public void registrarVenda(Venda umaVenda, int codigoProduto, int quantidade) {
-		Produto prod = produtos.stream().filter(p -> p.getId() == codigoProduto).findFirst().get();
+		Produto prod = produtos.stream()
+				.filter(p -> p.getId() == codigoProduto)
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException(
+						"Produto nao encontrado no catalogo: " + codigoProduto));
 		umaVenda.registrarVenda(prod, quantidade);
 	}
 
