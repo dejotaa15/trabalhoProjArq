@@ -14,11 +14,10 @@ public class App {
             if (valor == 0){
                 break;
             }
+            dados.adicionaObservador(cm);
++           dados.adicionaObservador(cs);
             dados.add(valor);
-            cs.acrescentaValor(valor);
-            cm.acrescentaValor(valor);
-            cs.exibeSomatorio();
-            cm.exibeMedia();
+            
         }
         System.out.println("Fim");
     }
